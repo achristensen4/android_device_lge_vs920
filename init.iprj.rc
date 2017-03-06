@@ -207,46 +207,40 @@ on property:ro.baseband=svlte2a
    setprop ro.ril.svlte1x true
 
 service bridgemgrd /system/bin/bridgemgrd
-    class late_start
+    class main
     user radio
     group radio
-    disabled
 
 #+++ BRCM
 # dhcp service for pan-nap/pan-u
 service dhcpcd_brcm-pan /system/bin/dhcpcd -ABKL
     class main
-    disabled
     oneshot
 
 service iprenew_brcm-pan /system/bin/dhcpcd -n
     class main
-    disabled
     oneshot
 #--- BRCM
 
 service dhcpcd_bnep0 /system/bin/dhcpcd -BKLG
-    disabled
     oneshot
 
 service gpsone_daemon /system/bin/gpsone_daemon
-    class late_start
+    class main
     user system
     group system qcom_oncrpc inet
-    disabled
 
 service atfwd /system/bin/ATFWD-daemon
-    class late_start
+    class main
     user system
     group system radio
 
-#service hostapd /system/bin/hostapd -dddd /data/hostapd/hostapd.conf
+service hostapd /system/bin/hostapd -dddd /data/hostapd/hostapd.conf
 service hostapd /system/bin/hostapd -e/data/misc/wifi/entropy.bin /data/misc/wifi/hostapd.conf
-#    class late_start
-#    user root
+class late_start
+user root
     group system wifi inet
     oneshot
-    disabled
 
 on property:ro.data.large_tcp_window_size=true
     # Adjust socket buffer to enlarge TCP receive window for high bandwidth (e.g. DO-RevB)
@@ -256,30 +250,27 @@ on property:persist.timed.enable=true
     start time_daemon
 
 service ril-daemon1 /system/bin/rild -c 1
-    class late_start
+    class main
     socket rild1 stream 660 root radio
     socket rild-debug1 stream 660 radio system
     user root
-    disabled
     group radio cache inet misc audio sdcard_r sdcard_rw qcom_oncrpc diag log
 
 service sdcard /system/bin/sdcard /data/media 1023 1023
-    class late_start
-    disabled
+    class main
 
 on property:persist.fuse_sdcard=true
     start sdcard
 
 service atd /system/bin/atd
-    class late_start
+    class main
     user system
     group system inet
 
 service qem /system/bin/qem
-    class late_start
+    class main
     user root
     group root
-    disabled
     oneshot
 
 on property:sys.boot_completed=1
@@ -302,7 +293,6 @@ service prapp /system/bin/prapp
    class main
    user root
    group root
-   disabled
    oneshot
 
 on property:sys.boot_completed=1
@@ -330,7 +320,7 @@ on post-fs-data
 
 #CAPP_RESERVED_USERDATA
 on property:ro.reserve.blockcount=*
-    exec /system/bin/tune2fs -r $ro.reserve.blockcount \
+    exec /system/bin/tune2fs -r $ro.reserve.blockcount
               -u system -g system $ro.reserve.userdata
 
 ########################################
@@ -346,7 +336,6 @@ on property:init.svc.servicemanager=restarting
      restart lgdrm
 
 service qseecomd /system/bin/qseecomd
-   class late_start 
+   class main
    user system
    group system
-   disabled
